@@ -1,0 +1,606 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>نظام إدارة اشتراكات الإنترنت</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"> 
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;900&amp;display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+    <style>
+        :root {
+            --primary: #2c3e50; 
+            --primary-dark: #1a252f;
+            --secondary: #3498db;
+            --accent: #2980b9;
+            --success: #27ae60;
+            --warning: #f39c12;
+            --danger: #e74c3c;
+            --light: #ecf0f1;
+            --dark: #2c3e50;
+            --gray: #95a5a6;
+            --card-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            --transition: all 0.3s ease;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Tajawal', sans-serif;
+        }
+
+        body {
+            background-color: #f5f7fa;
+            color: var(--dark);
+            direction: rtl;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        /* التصميم العام */
+        .header {
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: white;
+            padding: 20px 0;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            text-align: center;
+            box-shadow: var(--card-shadow);
+        }
+
+        .header h1 {
+            font-size: 28px;
+            margin-bottom: 10px;
+        }
+
+        /* شريط التنقل */
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: white;
+            padding: 15px 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            box-shadow: var(--card-shadow);
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 15px;
+        }
+
+        .nav-link {
+            padding: 8px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .nav-link:hover,
+        .nav-link.active {
+            background-color: var(--primary);
+            color: white;
+        }
+
+        /* تصميم الكروت */
+        .card {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: var(--card-shadow);
+            transition: var(--transition);
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
+        }
+
+        .sub-card {
+            box-shadow: none;
+            border: 1px solid #eee;
+            padding: 15px;
+        }
+
+        .card-title {
+            font-size: 20px;
+            margin-bottom: 15px;
+            color: var(--primary);
+            border-bottom: 1px solid #eee;
+            padding-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        /* تصميم الجدول */
+        .table-responsive {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+
+        th,
+        td {
+            padding: 12px 15px;
+            text-align: right;
+            border-bottom: 1px solid #eee;
+        }
+
+        th {
+            background-color: var(--primary);
+            color: white;
+        }
+
+        tr:hover td {
+            background-color: #f8f9fa;
+        }
+
+        /* تصميم الأزرار */
+        .btn {
+            padding: 10px 15px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: var(--transition);
+            font-weight: 500;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .btn i {
+            margin-left: 5px;
+        }
+
+        .btn-primary {
+            background-color: var(--primary);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background-color: var(--primary-dark);
+        }
+
+        .btn-success {
+            background-color: var(--success);
+            color: white;
+        }
+
+        .btn-danger {
+            background-color: var(--danger);
+            color: white;
+        }
+
+        /* تصميم النماذج */
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 500;
+        }
+
+        input,
+        select,
+        textarea {
+            width: 100%;
+            padding: 10px 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 14px;
+        }
+
+        input:focus,
+        select:focus,
+        textarea:focus {
+            border-color: var(--primary);
+            outline: none;
+        }
+
+        /* تصميم المودال */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-content {
+            background-color: white;
+            border-radius: 10px;
+            width: 90%;
+            max-width: 600px;
+            padding: 20px;
+            box-shadow: 0 5px 30px rgba(0, 0, 0, 0.3);
+            position: relative;
+        }
+
+        .close-modal {
+            position: absolute;
+            top: 15px;
+            left: 15px;
+            font-size: 24px;
+            cursor: pointer;
+            color: #999;
+        }
+
+        /* تصميم الطباعة */
+        @media print {
+            body * {
+                visibility: hidden;
+            }
+            .print-section,
+            .print-section * {
+                visibility: visible;
+            }
+            .print-section {
+                position: absolute;
+                left: 0;
+                top: 0;
+                width: 100%;
+            }
+            .no-print {
+                display: none !important;
+            }
+        }
+
+        /* صفحة الإعدادات */
+        .settings-section {
+            display: none;
+        }
+
+        .settings-section.active {
+            display: block;
+        }
+
+        .tabs {
+            display: flex;
+            margin-bottom: 20px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .tab-btn {
+            padding: 10px 15px;
+            cursor: pointer;
+        }
+
+        .tab-btn.active {
+            border-bottom: 3px solid var(--primary);
+            font-weight: 600;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .form-actions {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+        }
+
+        /* تصميم الحالة */
+        .status {
+            display: inline-flex;
+            align-items: center;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .status-active {
+            background-color: rgba(39, 174, 96, 0.15);
+            color: var(--success);
+        }
+
+        .status-expired {
+            background-color: rgba(231, 76, 60, 0.15);
+            color: var(--danger);
+        }
+
+        .status-warning {
+            background-color: rgba(243, 156, 18, 0.15);
+            color: var(--warning);
+        }
+
+        /* تصميم متجاوب */
+        @media (max-width: 768px) {
+            .container {
+                padding: 15px;
+            }
+            .nav-links {
+                flex-direction: column;
+                gap: 5px;
+            }
+            .nav-link {
+                padding: 8px 10px;
+            }
+            .card-title {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 10px;
+            }
+            .form-actions {
+                flex-direction: column;
+                gap: 10px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <header class="header">
+            <h1><i class="fas fa-wifi"></i> نظام إدارة اشتراكات الإنترنت</h1>
+            <p>إدارة كاملة لاشتراكات الإنترنت وعملائك</p>
+        </header>
+        <div class="navbar">
+            <div class="nav-links">
+                <div class="nav-link active" data-section="subscriptions">
+                    <i class="fas fa-list"></i> الاشتراكات
+                </div>
+                <div class="nav-link" data-section="settings">
+                    <i class="fas fa-cog"></i> الإعدادات
+                </div>
+            </div>
+            <div class="user-info">
+                <span>مرحباً، مدير النظام</span>
+            </div>
+        </div>
+        <!-- قسم الاشتراكات -->
+        <div id="subscriptions" class="settings-section active">
+            <div class="card">
+                <div class="card-title">
+                    <span>إدارة الاشتراكات</span>
+                    <button id="addSubscriptionBtn" class="btn btn-primary">
+                        <i class="fas fa-plus"></i> إضافة اشتراك جديد
+                    </button>
+                </div>
+                <div class="table-responsive">
+                    <table id="subscriptionsTable">
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>اسم المشترك</th>
+                                <th>رقم الهاتف</th>
+                                <th>الباقة</th>
+                                <th>تاريخ الاشتراك</th>
+                                <th>تاريخ الانتهاء</th>
+                                <th>الحالة</th>
+                                <th class="no-print">الإجراءات</th>
+                            </tr>
+                        </thead>
+                        <tbody id="subscriptionsList">
+                            <!-- سيتم ملؤها بواسطة JavaScript -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <!-- قسم الإعدادات -->
+        <div id="settings" class="settings-section">
+            <div class="card">
+                <div class="card-title">
+                    <span><i class="fas fa-cog"></i> إعدادات النظام</span>
+                </div>
+                <div class="tabs">
+                    <div class="tab-btn active" data-tab="packages">إدارة الباقات</div>
+                    <div class="tab-btn" data-tab="system">إعدادات النظام</div>
+                </div>
+                <div id="packages" class="tab-content active">
+                    <div class="card sub-card">
+                        <div class="card-title">
+                            <span>أسعار الباقات</span>
+                            <button id="addPackageBtn" class="btn btn-primary">
+                                <i class="fas fa-plus"></i> إضافة باقة
+                            </button>
+                        </div>
+                        <div class="table-responsive">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>اسم الباقة</th>
+                                        <th>السرعة</th>
+                                        <th>السعر (دينار عراقي)</th>
+                                        <th>الإجراءات</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="packagesList">
+                                    <!-- سيتم ملؤها بواسطة JavaScript -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                <div id="system" class="tab-content">
+                    <form id="systemSettingsForm">
+                        <div class="form-group">
+                            <label for="companyName">اسم الشركة</label>
+                            <input type="text" id="companyName" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="companyAddress">عنوان الشركة</label>
+                            <input type="text" id="companyAddress" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="companyPhone">هاتف الشركة</label>
+                            <input type="tel" id="companyPhone" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="defaultSubscriptionPeriod">مدة الاشتراك الافتراضية (أيام)</label>
+                            <input type="number" id="defaultSubscriptionPeriod" required>
+                        </div>
+                        <div class="form-actions">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-save"></i> حفظ الإعدادات
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- مودال إضافة/تعديل اشتراك -->
+    <div id="subscriptionModal" class="modal">
+        <div class="modal-content">
+            <span class="close-modal">×</span>
+            <h2 id="modalTitle">إضافة اشتراك جديد</h2>
+            <form id="subscriptionForm">
+                <input type="hidden" id="subscriptionId">
+                <div class="form-group">
+                    <label for="subscriberName">اسم المشترك</label>
+                    <input type="text" id="subscriberName" required>
+                </div>
+                <div class="form-group">
+                    <label for="phoneNumber">رقم الهاتف</label>
+                    <input type="tel" id="phoneNumber" required>
+                </div>
+                <div class="form-group">
+                    <label for="address">العنوان</label>
+                    <input type="text" id="address" required>
+                </div>
+                <div class="form-group">
+                    <label for="packageType">الباقة</label>
+                    <select id="packageType" required>
+                        <!-- سيتم ملؤها بواسطة JavaScript -->
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="subscriptionDate">تاريخ الاشتراك</label>
+                    <input type="date" id="subscriptionDate" required>
+                </div>
+                <div class="form-group">
+                    <label for="expiryDate">تاريخ الانتهاء</label>
+                    <input type="date" id="expiryDate" required>
+                </div>
+                <div class="form-group">
+                    <label for="notes">ملاحظات</label>
+                    <textarea id="notes" rows="3"></textarea>
+                </div>
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-save"></i> حفظ
+                    </button>
+                    <button type="button" id="printBtn" class="btn btn-success no-print">
+                        <i class="fas fa-print"></i> طباعة
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+    <!-- مودال إضافة/تعديل باقة -->
+    <div id="packageModal" class="modal">
+        <div class="modal-content">
+            <span class="close-modal">×</span>
+            <h2 id="packageModalTitle">إضافة باقة جديدة</h2>
+            <form id="packageForm">
+                <input type="hidden" id="packageId">
+                <div class="form-group">
+                    <label for="packageName">اسم الباقة</label>
+                    <input type="text" id="packageName" required>
+                </div>
+                <div class="form-group">
+                    <label for="packageSpeed">السرعة (ميجابت)</label>
+                    <input type="number" id="packageSpeed" required>
+                </div>
+                <div class="form-group">
+                    <label for="packagePrice">السعر (دينار عراقي)</label>
+                    <input type="number" id="packagePrice" required>
+                </div>
+                <div class="form-group">
+                    <label for="packageDescription">الوصف</label>
+                    <textarea id="packageDescription" rows="3"></textarea>
+                </div>
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-save"></i> حفظ الباقة
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script> 
+    <script>
+        // تخزين البيانات محليًا
+        function loadDataFromLocalStorage() {
+            const savedData = localStorage.getItem('systemData');
+            if (savedData) {
+                systemData = JSON.parse(savedData);
+            }
+        }
+
+        function saveDataToLocalStorage() {
+            localStorage.setItem('systemData', JSON.stringify(systemData));
+        }
+
+        // بيانات النظام
+        let systemData = {
+            companyName: "شركة اتصالات العراق",
+            companyAddress: "بغداد - المنصور",
+            companyPhone: "07701234567",
+            defaultSubscriptionPeriod: 30,
+            packages: [
+                { id: 1, name: "باقة أساسية", speed: 10, price: 25000, description: "باقة إنترنت أساسية" },
+                { id: 2, name: "باقة متوسطة", speed: 20, price: 40000, description: "باقة إنترنت متوسطة السرعة" },
+                { id: 3, name: "باقة سريعة", speed: 50, price: 60000, description: "باقة إنترنت سريعة" },
+                { id: 4, name: "باقة فائقة", speed: 100, price: 85000, description: "باقة إنترنت فائقة السرعة" }
+            ],
+            subscriptions: []
+        };
+
+        // تحميل البيانات عند بدء التشغيل
+        document.addEventListener('DOMContentLoaded', function () {
+            loadDataFromLocalStorage(); // تحميل البيانات من localStorage
+            loadSystemSettings();
+            renderPackages();
+            renderSubscriptions();
+            setupEventListeners();
+        });
+
+        // تحميل إعدادات النظام
+        function loadSystemSettings() {
+            document.getElementById('companyName').value = systemData.companyName;
+            document.getElementById('companyAddress').value = systemData.companyAddress;
+            document.getElementById('companyPhone').value = systemData.companyPhone;
+            document.getElementById('defaultSubscriptionPeriod').value = systemData.defaultSubscriptionPeriod;
+        }
+
+        // عرض الباقات
+        function renderPackages() {
+            const packagesList = document.getElementById('packagesList');
+            const packageTypeSelect = document.getElementById('packageType');
+            packagesList.innerHTML = '';
+            packageTypeSelect.innerHTML = '<option value="">اختر الباقة</option>';
+            systemData.packages.forEach(pkg => {
+                const row = `
+                    <tr>
+                        <td>${pkg.name}</td>
+                        <td>${pkg.speed} ميجابت</td>
+                        <td>${formatCurrency(pkg.price)} دينار</td>
+                        <td>
+  
